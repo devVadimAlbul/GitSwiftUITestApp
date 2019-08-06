@@ -2,10 +2,11 @@ import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject var accountHelper: AccountHelper
+    @ObservedObject var viewModel: RootViewModel
   
     var body: some View {
       VStack {
-        if accountHelper.isAuthorized {
+        if viewModel.isAuthorized {
           ListRepositoriesView(
             viewModel: ListRepositoriesViewModel(
               repositoryGateway: RepositoryGatewayImpl(api: ApiGitGatewayImpl(),
@@ -20,13 +21,8 @@ struct RootView: View {
           )
         }
       }
+      .onAppear(perform: {
+        self.viewModel.apply(.onAppear)
+      })
     }
 }
-
-#if DEBUG
-struct RootView_Previews: PreviewProvider {
-    static var previews: some View {
-      RootView().environmentObject(AccountHelper())
-    }
-}
-#endif

@@ -7,6 +7,10 @@ protocol UserProfileGateway {
   func login(auth: AuthUser) -> AnyPublisher<UserProfile, Error>
 }
 
+// sourcery:begin: AutoMockable
+extension UserProfileGateway {}
+// sourcery:end
+
 class UserProfileGatewayImpl: UserProfileGateway {
   
   private var api: ApiGitGateway

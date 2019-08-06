@@ -26,7 +26,8 @@ class APIService: APIServiceType {
                        print("#APIService receiveSubscription", $0)
                        return false
                      }, receiveOutput: { (data, urlResponse) -> Bool in
-                       print("#APIService receiveOutput", data.toJSON(), urlResponse)
+                       print("#APIService urlResponse", urlResponse)
+                       print("#APIService response", data.toJSON())
                         return false
                      }, receiveCompletion: {
                        print("#APIService receiveCompletion", $0)
@@ -35,7 +36,6 @@ class APIService: APIServiceType {
             .map { data, urlResponse in data }
             .mapError { _ in ApiError.dataNotFound }
             .decode(type: Request.Response.self, decoder: decorder)
-            .print("#Response")
             .mapError({$0})
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()

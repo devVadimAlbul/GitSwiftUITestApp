@@ -1,0 +1,6 @@
+sources:
+  - GitSwiftUITestApp
+templates:
+  - GitSwiftUITestApp/Sourcery/Templates
+output:
+  GitSwiftUITestApp/Sourcery/Sourcery.generated.swift

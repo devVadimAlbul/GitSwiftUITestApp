@@ -19,7 +19,7 @@ struct RepositoryRowView: View {
         Spacer()
         Image(systemName: "star.fill")
         Text("\(repository.stargazersCount)")
-      }
+      }.padding(.top)
     }
   }
 }
