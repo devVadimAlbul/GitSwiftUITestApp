@@ -1,10 +1,25 @@
 import SwiftUI
 
 struct RootView: View {
-  @EnvironmentObject var acountHelper: AccountHelper
+    @EnvironmentObject var accountHelper: AccountHelper
   
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello World!"/*@END_MENU_TOKEN@*/)
+      VStack {
+        if accountHelper.isAuthorized {
+          ListRepositoriesView(
+            viewModel: ListRepositoriesViewModel(
+              repositoryGateway: RepositoryGatewayImpl(api: ApiGitGatewayImpl(),
+                                                       storage: CoreProvider(persistentContainer: CoreDataStack.shared.persistentContainer)),
+              userName: accountHelper.userProfile!.login
+            )
+          )
+        } else {
+           LoginView(viewModel: LoginViewModel(
+            userGateway: UserProfileGatewayImpl(api: ApiGitGatewayImpl(),
+                                                storage: CoreProvider()))
+          )
+        }
+      }
     }
 }
 

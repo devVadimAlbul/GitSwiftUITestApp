@@ -16,21 +16,25 @@ class LoginViewModel: ObservableObject, ViewModalType {
     var isErrorShown = false
     var errorMessage = ""
   }
+  
   // MARK: property
-  @Published private(set) var output = Output() {
-    didSet {
-      willChangeSubject.send(())
-    }
-  }
-  private let willChangeSubject = PassthroughSubject<Void, Never>()
+  private let willChange = PassthroughSubject<Void, Never>()
   private let errorSubject = PassthroughSubject<Error, Never>()
   private let onSubmitSubject = PassthroughSubject<Void, Never>()
+  private let authSubject = PassthroughSubject<UserProfile, Never>()
   private var cancellables: [AnyCancellable] = []
+  private var userGateway: UserProfileGateway
+  @Published private(set) var output = Output() {
+    didSet {
+      willChange.send(())
+    }
+  }
   
   var isErrorShown: Bool {
     get { return output.isErrorShown }
     set { output.isErrorShown = newValue }
   }
+  
   var username: String {
     set { output.username = newValue }
     get { return output.username }
@@ -41,8 +45,8 @@ class LoginViewModel: ObservableObject, ViewModalType {
     get { return output.password }
   }
   
-  init() {
-    
+  init(userGateway: UserProfileGateway) {
+    self.userGateway = userGateway
     bindInputs()
     bindOutput()
   }
@@ -50,7 +54,7 @@ class LoginViewModel: ObservableObject, ViewModalType {
   // MARK: apply
   func apply(_ input: Input) {
     switch input {
-      case .onSubmit: onSubmitSubject.send(())
+    case .onSubmit: onSubmitSubject.send(())
     }
   }
   
@@ -59,8 +63,17 @@ class LoginViewModel: ObservableObject, ViewModalType {
     let submitStream = onSubmitSubject
       .filter({self.output.isValid})
       .map({AuthUser(username: self.output.username, password: self.output.password)})
+      .flatMap({ [userGateway, errorSubject] auth in
+        userGateway.login(auth: auth)
+          .catch { (error) -> Empty<UserProfile, Never> in
+            errorSubject.send(error)
+            return .init()
+          }
+      })
+      .subscribe(authSubject)
     
     cancellables += [
+      submitStream
     ]
   }
   
@@ -73,14 +86,20 @@ class LoginViewModel: ObservableObject, ViewModalType {
       .map { _ in true }
       .assign(to: \.output.isErrorShown, on: self)
     
-    let validStream = willChangeSubject
+    let validStream = willChange
       .map{ !self.output.username.isEmpty && !self.output.password.isEmpty }
+      .removeDuplicates()
       .assign(to: \.output.isValid, on: self)
+    
+    let authStream = authSubject.sink(receiveValue: {
+      Constants.accountHelper.userProfile = $0
+    })
     
     cancellables += [
       errorStream,
       errorMessageStream,
-      validStream
+      validStream,
+      authStream
     ]
   }
   

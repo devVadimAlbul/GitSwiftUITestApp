@@ -9,15 +9,32 @@
 import SwiftUI
 
 struct LoginView: View {
+  
+  @ObservedObject var viewModel: LoginViewModel
+  @EnvironmentObject var accountHelper: AccountHelper
+  
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello World!"/*@END_MENU_TOKEN@*/)
+      VStack {
+        InputFextField(label: "Username:", placeholder: "Enter username", textBinding: $viewModel.username, isSecure: false)
+        
+        InputFextField(label: "Password:", placeholder: "Enter password", textBinding: $viewModel.password, isSecure: true)
+          .padding(.bottom, 30)
+        
+        Button(action: {
+          self.viewModel.apply(.onSubmit)
+        }) {
+          HStack {
+            Spacer()
+            Text("Login").font(.title).foregroundColor(.white)
+            Spacer()
+          }
+        }
+        .disabled(!self.viewModel.output.isValid)
+        .padding()
+        .background(viewModel.output.isValid ? Color.red : Color.gray)
+      }
+      .alert(isPresented: $viewModel.isErrorShown) { () -> Alert in
+        Alert(title: Text("Error"), message: Text(viewModel.output.errorMessage))
+      }
     }
 }
-
-#if DEBUG
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
-}
-#endif
