@@ -11,7 +11,7 @@ struct RootView: View {
             viewModel: ListRepositoriesViewModel(
               repositoryGateway: RepositoryGatewayImpl(api: ApiGitGatewayImpl(),
                                                        storage: CoreProvider(persistentContainer: CoreDataStack.shared.persistentContainer)),
-              userName: accountHelper.userProfile!.login
+              userName: accountHelper.userProfile?.login ?? ""
             )
           )
         } else {

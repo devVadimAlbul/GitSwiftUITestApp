@@ -98,6 +98,27 @@ class ApiGitGatewayMock: ApiGitGateway {
     }
 
 }
+class RepositoryGatewayMock: RepositoryGateway {
+
+    //MARK: - listRepositories
+
+    var listRepositoriesUserNameCallsCount = 0
+    var listRepositoriesUserNameCalled: Bool {
+        return listRepositoriesUserNameCallsCount > 0
+    }
+    var listRepositoriesUserNameReceivedUserName: String?
+    var listRepositoriesUserNameReceivedInvocations: [String] = []
+    var listRepositoriesUserNameReturnValue: AnyPublisher<[GitRepository], Error>!
+    var listRepositoriesUserNameClosure: ((String) -> AnyPublisher<[GitRepository], Error>)?
+
+    func listRepositories(userName: String) -> AnyPublisher<[GitRepository], Error> {
+        listRepositoriesUserNameCallsCount += 1
+        listRepositoriesUserNameReceivedUserName = userName
+        listRepositoriesUserNameReceivedInvocations.append(userName)
+        return listRepositoriesUserNameClosure.map({ $0(userName) }) ?? listRepositoriesUserNameReturnValue
+    }
+
+}
 class UserProfileGatewayMock: UserProfileGateway {
 
     //MARK: - loadCurrentUser

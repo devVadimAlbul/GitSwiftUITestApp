@@ -5,6 +5,10 @@ protocol RepositoryGateway {
   func listRepositories(userName: String) -> AnyPublisher<[GitRepository], Error>
 }
 
+// sourcery:begin: AutoMockable
+extension RepositoryGateway {}
+// sourcery:end
+
 class RepositoryGatewayImpl: RepositoryGateway {
   
   private var api: ApiGitGateway

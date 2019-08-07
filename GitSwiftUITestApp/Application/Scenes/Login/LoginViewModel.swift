@@ -24,6 +24,7 @@ class LoginViewModel: ObservableObject, ViewModalType {
   private let authSubject = PassthroughSubject<UserProfile, Never>()
   private var cancellables: [AnyCancellable] = []
   private var userGateway: UserProfileGateway
+  
   @Published private(set) var output = Output() {
     didSet {
       willChange.send(())
@@ -102,8 +103,5 @@ class LoginViewModel: ObservableObject, ViewModalType {
       authStream
     ]
   }
-  
-  
-  
-}
 
+}

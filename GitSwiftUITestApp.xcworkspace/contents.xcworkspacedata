@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:/Users/vadim_albul/Project/Test/GitSwiftUITestApp/GitSwiftUITestApp/Application/BuisnessLogic/API/RootViewModelTests.swift">
+   </FileRef>
+   <FileRef
       location = "group:GitSwiftUITestApp.xcodeproj">
    </FileRef>
    <FileRef
